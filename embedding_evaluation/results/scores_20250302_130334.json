@@ -1,0 +1,66 @@
+{
+  "word2vec": {
+    "average_accuracy": 0.6486666666666667,
+    "average_f1": 0.51409048467872,
+    "weighted_score": 0.5666922220466787,
+    "task_scores": {
+      "Instruction Synonym Detection": {
+        "accuracy": 0.466,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "Semantic Block Equivalence": {
+        "accuracy": 0.876,
+        "precision": 0.970873786407767,
+        "recall": 0.78125,
+        "f1": 0.8658008658008658,
+        "avg_similarity_equivalent": 0.7812500018626451,
+        "avg_similarity_different": 0.059908819280328825,
+        "separation": 0.7213411825823163
+      },
+      "Dead Code Detection": {
+        "accuracy": 0.604,
+        "precision": 0.5734072022160664,
+        "recall": 0.8247011952191236,
+        "f1": 0.6764705882352942,
+        "roc_auc": 0.6467623481975712,
+        "avg_impact_dead": 0.15192012025734758,
+        "avg_impact_live": 0.13329210346399317,
+        "impact_separation": -0.018628016793354407
+      }
+    }
+  },
+  "palmtree": {
+    "average_accuracy": 0.5673333333333334,
+    "average_f1": 0.46190796857463523,
+    "weighted_score": 0.4557054213433567,
+    "task_scores": {
+      "Instruction Synonym Detection": {
+        "accuracy": 0.46,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "Semantic Block Equivalence": {
+        "accuracy": 0.744,
+        "precision": 0.7352941176470589,
+        "recall": 0.78125,
+        "f1": 0.7575757575757576,
+        "avg_similarity_equivalent": 0.78125,
+        "avg_similarity_different": 0.479036099329805,
+        "separation": 0.302213900670195
+      },
+      "Dead Code Detection": {
+        "accuracy": 0.498,
+        "precision": 0.5,
+        "recall": 0.8446215139442231,
+        "f1": 0.6281481481481481,
+        "roc_auc": 0.6220099521592346,
+        "avg_impact_dead": 0.14588951725771016,
+        "avg_impact_live": 0.08592537737928292,
+        "impact_separation": -0.05996413987842723
+      }
+    }
+  }
+}

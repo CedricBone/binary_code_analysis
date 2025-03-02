@@ -1,0 +1,21 @@
+{
+  "word2vec": {
+    "Instruction Synonym Detection": {
+      "task": "Instruction Synonym Detection",
+      "description": "Detect different instructions with the same semantic effect",
+      "results": {
+        "similarities": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          

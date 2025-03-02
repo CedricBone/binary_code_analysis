@@ -1,0 +1,69 @@
+{
+    "experiment": {
+        "name": "cross_architecture_analysis",
+        "description": "Instruction embedding evaluation across multiple CPU architectures",
+        "seed": 42
+    },
+    "data": {
+        "type": "cross_arch",
+        "cross_arch": {
+            "architectures": [
+                "x86_64",
+                "arm64",
+                "mips"
+            ],
+            "compiler": "gcc",
+            "opt_level": "-O2"
+        }
+    },
+    "embeddings": {
+        "models": [
+            "word2vec",
+            "bert",
+            "graph"
+        ],
+        "embedding_dim": 128,
+        "params": {
+            "word2vec": {
+                "window": 5,
+                "min_count": 1,
+                "workers": 4
+            },
+            "bert": {
+                "max_seq_length": 128,
+                "batch_size": 32,
+                "epochs": 3
+            },
+            "graph": {
+                "hidden_dim": 128,
+                "initial_dim": 64,
+                "batch_size": 32,
+                "epochs": 50
+            }
+        }
+    },
+    "tasks": {
+        "basic": [
+            "synonym",
+            "block"
+        ],
+        "enhanced": [
+            "enhanced_synonym",
+            "enhanced_block"
+        ]
+    },
+    "visualization": {
+        "enabled": true,
+        "formats": [
+            "png"
+        ],
+        "embedding_projection": "tsne",
+        "tasks_to_visualize": "all"
+    },
+    "output": {
+        "results_dir": "results/cross_arch_experiment",
+        "visualizations_dir": "visualizations/cross_arch_experiment",
+        "save_models": true,
+        "save_embeddings": true
+    }
+}

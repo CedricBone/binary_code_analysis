@@ -1,0 +1,33 @@
+# Core dependencies
+numpy>=1.20.0
+scikit-learn>=1.0.0
+matplotlib>=3.5.0
+pandas>=1.3.0
+seaborn>=0.11.0
+tqdm>=4.62.0
+requests>=2.27.0
+networkx>=2.6.3
+
+# Word2Vec dependencies
+gensim>=4.1.0
+
+# BERT dependencies
+torch>=1.10.0
+transformers>=4.16.0
+
+# Graph-based embeddings
+torch-geometric>=2.0.0
+torch-scatter>=2.0.0
+torch-sparse>=0.6.0
+
+# Visualization
+umap-learn>=0.5.2
+
+# Binary analysis (optional)
+# capstone>=4.0.2  # For more advanced disassembly (if needed)
+
+# Development dependencies
+pytest>=6.2.5
+black>=21.10b0
+isort>=5.10.0
+flake8>=4.0.0

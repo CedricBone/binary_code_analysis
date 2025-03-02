@@ -1,0 +1,68 @@
+{
+    "experiment": {
+        "name": "real_binary_analysis",
+        "description": "Instruction embedding evaluation using real binary data",
+        "seed": 42
+    },
+    "data": {
+        "type": "real",
+        "real": {
+            "repo_urls": [
+                "https://github.com/antirez/redis",
+                "https://github.com/sqlite/sqlite"
+            ],
+            "use_cache": true
+        }
+    },
+    "embeddings": {
+        "models": [
+            "word2vec",
+            "bert",
+            "graph"
+        ],
+        "embedding_dim": 128,
+        "params": {
+            "word2vec": {
+                "window": 5,
+                "min_count": 1,
+                "workers": 4
+            },
+            "bert": {
+                "max_seq_length": 128,
+                "batch_size": 32,
+                "epochs": 3
+            },
+            "graph": {
+                "hidden_dim": 128,
+                "initial_dim": 64,
+                "batch_size": 32,
+                "epochs": 50
+            }
+        }
+    },
+    "tasks": {
+        "enhanced": [
+            "enhanced_synonym",
+            "enhanced_block",
+            "enhanced_dead_code"
+        ],
+        "new": [
+            "function_boundary",
+            "vulnerability"
+        ]
+    },
+    "visualization": {
+        "enabled": true,
+        "formats": [
+            "png"
+        ],
+        "embedding_projection": "umap",
+        "tasks_to_visualize": "all"
+    },
+    "output": {
+        "results_dir": "results/real_binary_experiment",
+        "visualizations_dir": "visualizations/real_binary_experiment",
+        "save_models": true,
+        "save_embeddings": true
+    }
+}
