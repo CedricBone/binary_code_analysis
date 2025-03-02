@@ -1,0 +1,4 @@
+<PAD>	0
+<UNK>	1
+<START>	2
+<END>	3

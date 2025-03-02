@@ -1,0 +1,10 @@
+2025-03-01 21:30:56,161 - utils - INFO - Created directory: build
+2025-03-01 21:30:56,162 - utils - INFO - Created directory: downloads
+2025-03-01 21:30:56,162 - utils - INFO - Created directory: functions
+2025-03-01 21:30:56,162 - utils - INFO - Created directory: models
+2025-03-01 21:30:56,162 - utils - INFO - Created directory: results
+2025-03-01 21:30:56,162 - utils - INFO - Created directory: logs
+2025-03-01 21:30:56,162 - utils - INFO - Training model on x86_64 with gcc -O2
+2025-03-01 21:30:56,162 - utils - INFO - Loaded 0 functions for x86_64 with gcc -O2
+2025-03-01 21:30:56,162 - utils - ERROR - No functions found for x86_64 with gcc -O2
+2025-03-01 21:30:56,162 - utils - ERROR - Model training failed

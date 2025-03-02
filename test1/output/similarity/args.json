@@ -1,0 +1,23 @@
+{
+    "train_data": "./sample_data/training",
+    "val_data": "./sample_data/training",
+    "output_dir": "./output/similarity",
+    "max_seq_length": 200,
+    "model_type": "safe",
+    "embedding_dim": 128,
+    "hidden_dim": 256,
+    "num_layers": 2,
+    "dropout": 0.1,
+    "attention_heads": 8,
+    "batch_size": 2,
+    "epochs": 3,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "margin": 0.5,
+    "early_stopping": 5,
+    "save_steps": 1000,
+    "seed": 42,
+    "num_workers": 4,
+    "device": "cpu",
+    "resume": null
+}

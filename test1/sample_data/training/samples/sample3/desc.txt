@@ -1,0 +1,1 @@
+Implements binary search algorithm to find a target value in a sorted array of integers. Returns the index of the target if found, or -1 if not present in the array.

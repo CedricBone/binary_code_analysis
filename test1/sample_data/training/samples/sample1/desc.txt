@@ -1,0 +1,1 @@
+Implements the SHA-256 transform function that processes a single 64-byte block of data. The function updates the hash state in-place by performing the SHA-256 compression function with 64 rounds of processing.

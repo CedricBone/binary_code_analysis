@@ -1,0 +1,1 @@
+Performs AES-128 encryption on a single 16-byte block using the provided key schedule. Uses hardware AES instructions to implement the SubBytes, ShiftRows, MixColumns, and AddRoundKey operations across 10 rounds of encryption.

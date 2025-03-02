@@ -1,0 +1,8 @@
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: build
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: downloads
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: functions
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: models
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: results
+2025-03-01 21:31:02,337 - utils - INFO - Created directory: logs
+2025-03-01 21:31:02,337 - utils - ERROR - Summary file not found: results/x86_64_gcc_O2/summary.json
+2025-03-01 21:31:02,337 - utils - ERROR - No results found for model x86_64_gcc_O2

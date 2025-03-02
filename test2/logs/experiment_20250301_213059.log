@@ -1,0 +1,8 @@
+2025-03-01 21:30:59,183 - utils - INFO - Created directory: build
+2025-03-01 21:30:59,183 - utils - INFO - Created directory: downloads
+2025-03-01 21:30:59,183 - utils - INFO - Created directory: functions
+2025-03-01 21:30:59,183 - utils - INFO - Created directory: models
+2025-03-01 21:30:59,183 - utils - INFO - Created directory: results
+2025-03-01 21:30:59,184 - utils - INFO - Created directory: logs
+2025-03-01 21:30:59,184 - utils - ERROR - Model file not found: models/x86_64_gcc_O2/model.h5
+2025-03-01 21:30:59,184 - utils - ERROR - Failed to load model from models/x86_64_gcc_O2

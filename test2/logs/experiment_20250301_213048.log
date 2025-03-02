@@ -1,0 +1,9 @@
+2025-03-01 21:30:48,697 - utils - INFO - Created directory: build
+2025-03-01 21:30:48,697 - utils - INFO - Created directory: downloads
+2025-03-01 21:30:48,697 - utils - INFO - Created directory: functions
+2025-03-01 21:30:48,698 - utils - INFO - Created directory: models
+2025-03-01 21:30:48,698 - utils - INFO - Created directory: results
+2025-03-01 21:30:48,698 - utils - INFO - Created directory: logs
+2025-03-01 21:30:48,760 - utils - ERROR - Missing dependencies: arm-linux-gnueabi-objdump, mips-linux-gnu-objdump, powerpc64-linux-gnu-objdump
+2025-03-01 21:30:48,760 - utils - ERROR - Please install these dependencies before running the experiment.
+2025-03-01 21:30:48,761 - utils - ERROR - Missing dependencies. Aborting.
