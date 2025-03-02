@@ -1,0 +1,18 @@
+2025-03-02 12:15:13,667 - utils - INFO - Created directory: build
+2025-03-02 12:15:13,668 - utils - INFO - Created directory: downloads
+2025-03-02 12:15:13,668 - utils - INFO - Created directory: functions
+2025-03-02 12:15:13,668 - utils - INFO - Created directory: models
+2025-03-02 12:15:13,668 - utils - INFO - Created directory: results
+2025-03-02 12:15:13,668 - utils - INFO - Created directory: logs
+2025-03-02 12:15:13,668 - utils - INFO - Training model on x86_64 with gcc -O0
+2025-03-02 12:15:13,668 - utils - INFO - Loaded 0 functions for x86_64 with gcc -O0
+2025-03-02 12:15:13,668 - utils - WARNING - No functions found for x86_64 with gcc -O0 or synthetic data requested
+2025-03-02 12:15:13,668 - utils - INFO - Generating synthetic function data for training...
+2025-03-02 12:15:13,668 - utils - INFO - Generating 2000 synthetic functions for x86_64
+2025-03-02 12:15:13,718 - utils - INFO - Saved 2000 synthetic functions to functions/synthetic/x86_64/gcc/O0/functions.json
+2025-03-02 12:15:13,801 - utils - WARNING - Only found 2000 similar pairs, need 5000
+2025-03-02 12:15:13,801 - utils - INFO - Generating 3000 random similar pairs
+2025-03-02 12:15:13,863 - utils - INFO - Created 7000 function pairs (5000 similar, 2000 dissimilar)
+2025-03-02 12:15:13,964 - utils - INFO - Tokenizer fitted with 35 unique tokens
+2025-03-02 12:15:14,206 - absl - WARNING - At this time, the v2.11+ optimizer `tf.keras.optimizers.Adam` runs slowly on M1/M2 Macs, please use the legacy Keras optimizer instead, located at `tf.keras.optimizers.legacy.Adam`.
+2025-03-02 12:15:14,209 - absl - WARNING - There is a known slowdown when using v2.11+ Keras optimizers on M1/M2 Macs. Falling back to the legacy Keras optimizer, i.e., `tf.keras.optimizers.legacy.Adam`.

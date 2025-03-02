@@ -1,0 +1,13 @@
+2025-03-02 01:19:47,457 - utils - INFO - Created directory: build
+2025-03-02 01:19:47,457 - utils - INFO - Created directory: downloads
+2025-03-02 01:19:47,458 - utils - INFO - Created directory: functions
+2025-03-02 01:19:47,458 - utils - INFO - Created directory: models
+2025-03-02 01:19:47,458 - utils - INFO - Created directory: results
+2025-03-02 01:19:47,458 - utils - INFO - Created directory: logs
+2025-03-02 01:19:47,552 - utils - ERROR - Missing dependencies: arm-linux-gnueabi-objdump, mips-linux-gnu-objdump, powerpc64-linux-gnu-objdump
+2025-03-02 01:19:47,553 - utils - ERROR - Please install these dependencies before running the experiment.
+2025-03-02 01:19:47,553 - utils - ERROR - For cross-architecture toolchains, try installing with:
+2025-03-02 01:19:47,553 - utils - ERROR - sudo apt install binutils-arm binutils-mips binutils-powerpc64
+2025-03-02 01:19:47,554 - utils - WARNING - Continuing with available tools, but some architectures will be skipped.
+2025-03-02 01:19:47,554 - utils - INFO - Core dependencies are installed.
+2025-03-02 01:19:47,554 - utils - INFO - Total configurations to compile: 32

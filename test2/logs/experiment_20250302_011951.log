@@ -1,0 +1,46 @@
+2025-03-02 01:19:51,104 - utils - INFO - Downloading https://www.openssl.org/source/openssl-1.1.1p.tar.gz to downloads/openssl-1.1.1p.tar.gz
+2025-03-02 01:19:51,119 - utils - INFO - Downloading https://www.openssl.org/source/openssl-1.1.1p.tar.gz to downloads/openssl-1.1.1p.tar.gz
+2025-03-02 01:19:51,165 - utils - INFO - Downloading https://www.openssl.org/source/openssl-1.1.1p.tar.gz to downloads/openssl-1.1.1p.tar.gz
+2025-03-02 01:19:51,184 - utils - INFO - Downloading https://www.openssl.org/source/openssl-1.1.1p.tar.gz to downloads/openssl-1.1.1p.tar.gz
+2025-03-02 01:19:52,592 - utils - INFO - Extracting downloads/openssl-1.1.1p.tar.gz to downloads
+2025-03-02 01:19:52,599 - utils - INFO - Extracting downloads/openssl-1.1.1p.tar.gz to downloads
+2025-03-02 01:19:52,714 - utils - INFO - Extracting downloads/openssl-1.1.1p.tar.gz to downloads
+2025-03-02 01:19:52,719 - utils - INFO - Extracting downloads/openssl-1.1.1p.tar.gz to downloads
+2025-03-02 01:19:55,655 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with gcc -O2
+2025-03-02 01:19:55,656 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/gcc/O2
+2025-03-02 01:19:55,694 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with gcc -O3
+2025-03-02 01:19:55,699 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/gcc/O3
+2025-03-02 01:19:55,702 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with gcc -O0
+2025-03-02 01:19:55,708 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/gcc/O0
+2025-03-02 01:19:55,713 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with gcc -O1
+2025-03-02 01:19:55,713 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/gcc/O1
+2025-03-02 01:20:00,371 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:20:00,371 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:20:00,375 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:20:00,397 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:22:11,282 - utils - INFO - Successfully compiled openssl-1.1.1p for x86_64 with gcc -O0
+2025-03-02 01:22:11,289 - utils - INFO - Project already extracted: downloads/openssl-1.1.1p
+2025-03-02 01:22:11,290 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with clang -O0
+2025-03-02 01:22:11,291 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/clang/O0
+2025-03-02 01:22:13,489 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:22:31,101 - utils - INFO - Successfully compiled openssl-1.1.1p for x86_64 with gcc -O1
+2025-03-02 01:22:31,105 - utils - INFO - Project already extracted: downloads/openssl-1.1.1p
+2025-03-02 01:22:31,105 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with clang -O1
+2025-03-02 01:22:31,106 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/clang/O1
+2025-03-02 01:22:33,329 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:22:37,282 - utils - INFO - Successfully compiled openssl-1.1.1p for x86_64 with gcc -O2
+2025-03-02 01:22:37,288 - utils - INFO - Project already extracted: downloads/openssl-1.1.1p
+2025-03-02 01:22:37,289 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with clang -O2
+2025-03-02 01:22:37,289 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/clang/O2
+2025-03-02 01:22:39,457 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:22:40,560 - utils - INFO - Successfully compiled openssl-1.1.1p for x86_64 with gcc -O3
+2025-03-02 01:22:40,565 - utils - INFO - Project already extracted: downloads/openssl-1.1.1p
+2025-03-02 01:22:40,566 - utils - INFO - Compiling openssl-1.1.1p for x86_64 with clang -O3
+2025-03-02 01:22:40,566 - utils - INFO - Copying source from downloads/openssl-1.1.1p to build/openssl-1.1.1p/x86_64/clang/O3
+2025-03-02 01:22:42,162 - utils - INFO - Running build command: ./config && make
+2025-03-02 01:24:25,468 - utils - INFO - Successfully compiled openssl-1.1.1p for x86_64 with clang -O0
+2025-03-02 01:24:25,472 - utils - INFO - Downloading https://ftp.gnu.org/gnu/coreutils/coreutils-9.0.tar.xz to downloads/coreutils-9.0.tar.xz
+2025-03-02 01:24:29,786 - utils - INFO - Extracting downloads/coreutils-9.0.tar.xz to downloads
+2025-03-02 01:24:31,113 - utils - INFO - Project already extracted: downloads/coreutils-9.0
+2025-03-02 01:24:31,113 - utils - INFO - Compiling coreutils-9.0 for x86_64 with gcc -O1
+2025-03-02 01:24:31,113 - utils - INFO - Copying source from downloads/coreutils-9.0 to build/coreutils-9.0/x86_64/gcc/O1

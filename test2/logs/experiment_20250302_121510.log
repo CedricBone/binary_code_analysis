@@ -1,0 +1,72 @@
+2025-03-02 12:15:10,109 - utils - INFO - Created directory: build
+2025-03-02 12:15:10,109 - utils - INFO - Created directory: downloads
+2025-03-02 12:15:10,109 - utils - INFO - Created directory: functions
+2025-03-02 12:15:10,109 - utils - INFO - Created directory: models
+2025-03-02 12:15:10,109 - utils - INFO - Created directory: results
+2025-03-02 12:15:10,110 - utils - INFO - Created directory: logs
+2025-03-02 12:15:10,110 - utils - INFO - Generating synthetic data for x86_64_gcc_O0
+2025-03-02 12:15:10,131 - utils - INFO - Generated 200 functions for x86_64_gcc_O0
+2025-03-02 12:15:10,131 - utils - INFO - Generating synthetic data for x86_64_gcc_O1
+2025-03-02 12:15:10,147 - utils - INFO - Generated 200 functions for x86_64_gcc_O1
+2025-03-02 12:15:10,147 - utils - INFO - Generating synthetic data for x86_64_gcc_O2
+2025-03-02 12:15:10,161 - utils - INFO - Generated 200 functions for x86_64_gcc_O2
+2025-03-02 12:15:10,161 - utils - INFO - Generating synthetic data for x86_64_gcc_O3
+2025-03-02 12:15:10,172 - utils - INFO - Generated 200 functions for x86_64_gcc_O3
+2025-03-02 12:15:10,172 - utils - INFO - Generating synthetic data for x86_64_clang_O0
+2025-03-02 12:15:10,192 - utils - INFO - Generated 200 functions for x86_64_clang_O0
+2025-03-02 12:15:10,192 - utils - INFO - Generating synthetic data for x86_64_clang_O1
+2025-03-02 12:15:10,207 - utils - INFO - Generated 200 functions for x86_64_clang_O1
+2025-03-02 12:15:10,207 - utils - INFO - Generating synthetic data for x86_64_clang_O2
+2025-03-02 12:15:10,220 - utils - INFO - Generated 200 functions for x86_64_clang_O2
+2025-03-02 12:15:10,220 - utils - INFO - Generating synthetic data for x86_64_clang_O3
+2025-03-02 12:15:10,231 - utils - INFO - Generated 200 functions for x86_64_clang_O3
+2025-03-02 12:15:10,232 - utils - INFO - Generating synthetic data for arm_gcc_O0
+2025-03-02 12:15:10,252 - utils - INFO - Generated 200 functions for arm_gcc_O0
+2025-03-02 12:15:10,252 - utils - INFO - Generating synthetic data for arm_gcc_O1
+2025-03-02 12:15:10,270 - utils - INFO - Generated 200 functions for arm_gcc_O1
+2025-03-02 12:15:10,270 - utils - INFO - Generating synthetic data for arm_gcc_O2
+2025-03-02 12:15:10,286 - utils - INFO - Generated 200 functions for arm_gcc_O2
+2025-03-02 12:15:10,286 - utils - INFO - Generating synthetic data for arm_gcc_O3
+2025-03-02 12:15:10,299 - utils - INFO - Generated 200 functions for arm_gcc_O3
+2025-03-02 12:15:10,299 - utils - INFO - Generating synthetic data for arm_clang_O0
+2025-03-02 12:15:10,322 - utils - INFO - Generated 200 functions for arm_clang_O0
+2025-03-02 12:15:10,322 - utils - INFO - Generating synthetic data for arm_clang_O1
+2025-03-02 12:15:10,340 - utils - INFO - Generated 200 functions for arm_clang_O1
+2025-03-02 12:15:10,340 - utils - INFO - Generating synthetic data for arm_clang_O2
+2025-03-02 12:15:10,355 - utils - INFO - Generated 200 functions for arm_clang_O2
+2025-03-02 12:15:10,355 - utils - INFO - Generating synthetic data for arm_clang_O3
+2025-03-02 12:15:10,368 - utils - INFO - Generated 200 functions for arm_clang_O3
+2025-03-02 12:15:10,368 - utils - INFO - Generating synthetic data for mips_gcc_O0
+2025-03-02 12:15:10,392 - utils - INFO - Generated 200 functions for mips_gcc_O0
+2025-03-02 12:15:10,392 - utils - INFO - Generating synthetic data for mips_gcc_O1
+2025-03-02 12:15:10,413 - utils - INFO - Generated 200 functions for mips_gcc_O1
+2025-03-02 12:15:10,413 - utils - INFO - Generating synthetic data for mips_gcc_O2
+2025-03-02 12:15:10,430 - utils - INFO - Generated 200 functions for mips_gcc_O2
+2025-03-02 12:15:10,430 - utils - INFO - Generating synthetic data for mips_gcc_O3
+2025-03-02 12:15:10,445 - utils - INFO - Generated 200 functions for mips_gcc_O3
+2025-03-02 12:15:10,445 - utils - INFO - Generating synthetic data for mips_clang_O0
+2025-03-02 12:15:10,470 - utils - INFO - Generated 200 functions for mips_clang_O0
+2025-03-02 12:15:10,470 - utils - INFO - Generating synthetic data for mips_clang_O1
+2025-03-02 12:15:10,494 - utils - INFO - Generated 200 functions for mips_clang_O1
+2025-03-02 12:15:10,494 - utils - INFO - Generating synthetic data for mips_clang_O2
+2025-03-02 12:15:10,512 - utils - INFO - Generated 200 functions for mips_clang_O2
+2025-03-02 12:15:10,512 - utils - INFO - Generating synthetic data for mips_clang_O3
+2025-03-02 12:15:10,526 - utils - INFO - Generated 200 functions for mips_clang_O3
+2025-03-02 12:15:10,526 - utils - INFO - Generating synthetic data for powerpc_gcc_O0
+2025-03-02 12:15:10,551 - utils - INFO - Generated 200 functions for powerpc_gcc_O0
+2025-03-02 12:15:10,551 - utils - INFO - Generating synthetic data for powerpc_gcc_O1
+2025-03-02 12:15:10,570 - utils - INFO - Generated 200 functions for powerpc_gcc_O1
+2025-03-02 12:15:10,570 - utils - INFO - Generating synthetic data for powerpc_gcc_O2
+2025-03-02 12:15:10,586 - utils - INFO - Generated 200 functions for powerpc_gcc_O2
+2025-03-02 12:15:10,586 - utils - INFO - Generating synthetic data for powerpc_gcc_O3
+2025-03-02 12:15:10,599 - utils - INFO - Generated 200 functions for powerpc_gcc_O3
+2025-03-02 12:15:10,599 - utils - INFO - Generating synthetic data for powerpc_clang_O0
+2025-03-02 12:15:10,621 - utils - INFO - Generated 200 functions for powerpc_clang_O0
+2025-03-02 12:15:10,621 - utils - INFO - Generating synthetic data for powerpc_clang_O1
+2025-03-02 12:15:10,639 - utils - INFO - Generated 200 functions for powerpc_clang_O1
+2025-03-02 12:15:10,639 - utils - INFO - Generating synthetic data for powerpc_clang_O2
+2025-03-02 12:15:10,654 - utils - INFO - Generated 200 functions for powerpc_clang_O2
+2025-03-02 12:15:10,654 - utils - INFO - Generating synthetic data for powerpc_clang_O3
+2025-03-02 12:15:10,666 - utils - INFO - Generated 200 functions for powerpc_clang_O3
+2025-03-02 12:15:10,666 - utils - INFO - Synthetic dataset created with 6400 total functions
+2025-03-02 12:15:10,666 - utils - INFO - Dataset saved to functions

@@ -1,0 +1,8 @@
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: build
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: downloads
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: functions
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: models
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: results
+2025-03-02 01:27:14,323 - utils - INFO - Created directory: logs
+2025-03-02 01:27:14,672 - utils - INFO - Available architectures: x86_64
+2025-03-02 01:27:14,672 - utils - INFO - Testing model on 8 configurations
