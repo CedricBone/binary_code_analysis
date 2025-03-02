@@ -74,7 +74,7 @@ def check_command_exists(command):
     except subprocess.CalledProcessError:
         return False
 
-def check_dependencies():
+def check_dependencies(require_all=False):
     """Check if all required dependencies are installed"""
     missing_deps = []
     
@@ -85,9 +85,8 @@ def check_dependencies():
     
     # Check cross-compilers and disassemblers for each architecture
     for arch_name, arch_info in config.ARCHITECTURES.items():
-        if arch_name != "x86_64":  # Native architecture likely doesn't need cross-compiler
-            if not check_command_exists(arch_info["disassembler"]):
-                missing_deps.append(arch_info["disassembler"])
+        if not check_command_exists(arch_info["disassembler"]):
+            missing_deps.append(arch_info["disassembler"])
     
     # Check basic build tools
     for tool in ["make", "tar", "wget", "curl"]:
@@ -97,10 +96,33 @@ def check_dependencies():
     if missing_deps:
         logger.error(f"Missing dependencies: {', '.join(missing_deps)}")
         logger.error("Please install these dependencies before running the experiment.")
-        return False
+        
+        # For cross-compilers, suggest installation command
+        cross_tools = [d for d in missing_deps if 'arm' in d or 'mips' in d or 'powerpc' in d]
+        if cross_tools:
+            logger.error("For cross-architecture toolchains, try installing with:")
+            logger.error(f"sudo apt install {' '.join(['binutils-' + t.split('-')[0] for t in cross_tools])}")
+        
+        # Only fail if we're requiring all dependencies or if core tools like gcc/objdump are missing
+        core_missing = [d for d in missing_deps if d in ['gcc', 'g++', 'clang', 'make', 'objdump']]
+        if require_all or core_missing:
+            return False
+        else:
+            logger.warning("Continuing with available tools, but some architectures will be skipped.")
     
-    logger.info("All required dependencies are installed.")
+    logger.info("Core dependencies are installed.")
     return True
+
+def get_available_architectures():
+    """Return a list of architectures that have all required tools available"""
+    available = []
+    
+    for arch_name, arch_info in config.ARCHITECTURES.items():
+        if check_command_exists(arch_info["disassembler"]):
+            available.append(arch_name)
+    
+    logger.info(f"Available architectures: {', '.join(available)}")
+    return available
 
 def run_command(command, cwd=None, env=None):
     """Run a shell command and return its output"""
@@ -325,3 +347,126 @@ def plot_heatmap(data, x_labels, y_labels, title, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.savefig(output_path, dpi=300)
     plt.close()
+
+# Generate synthetic function data for testing purposes
+def generate_synthetic_functions(num_functions=1000, architecture="x86_64"):
+    """Generate synthetic function data for testing"""
+    logger.info(f"Generating {num_functions} synthetic functions for {architecture}")
+    
+    # Common instruction templates for x86_64
+    x86_templates = [
+        "mov {reg1}, {reg2}",
+        "add {reg1}, {reg2}",
+        "sub {reg1}, {reg2}",
+        "push {reg1}",
+        "pop {reg1}",
+        "call 0xADDR",
+        "jmp 0xADDR",
+        "cmp {reg1}, {reg2}",
+        "je 0xADDR",
+        "ret"
+    ]
+    
+    # Common registers for x86_64
+    x86_regs = ["rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rsp", "rbp", "r8", "r9", "r10"]
+    
+    # Templates for ARM
+    arm_templates = [
+        "mov {reg1}, {reg2}",
+        "add {reg1}, {reg2}, {reg3}",
+        "sub {reg1}, {reg2}, {reg3}",
+        "push {reg1}",
+        "pop {reg1}",
+        "bl 0xADDR",
+        "b 0xADDR",
+        "cmp {reg1}, {reg2}",
+        "beq 0xADDR",
+        "bx lr"
+    ]
+    
+    # Common registers for ARM
+    arm_regs = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "fp", "sp", "lr"]
+    
+    # Templates for MIPS
+    mips_templates = [
+        "move {reg1}, {reg2}",
+        "addu {reg1}, {reg2}, {reg3}",
+        "subu {reg1}, {reg2}, {reg3}",
+        "sw {reg1}, 0({reg2})",
+        "lw {reg1}, 0({reg2})",
+        "jal 0xADDR",
+        "j 0xADDR",
+        "beq {reg1}, {reg2}, 0xADDR",
+        "bne {reg1}, {reg2}, 0xADDR",
+        "jr ra"
+    ]
+    
+    # Common registers for MIPS
+    mips_regs = ["zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "s0", "s1", "ra", "sp"]
+    
+    # Templates for PowerPC
+    ppc_templates = [
+        "mr {reg1}, {reg2}",
+        "add {reg1}, {reg2}, {reg3}",
+        "subf {reg1}, {reg3}, {reg2}",
+        "stw {reg1}, 0({reg2})",
+        "lwz {reg1}, 0({reg2})",
+        "bl 0xADDR",
+        "b 0xADDR",
+        "cmpw {reg1}, {reg2}",
+        "beq 0xADDR",
+        "blr"
+    ]
+    
+    # Common registers for PowerPC
+    ppc_regs = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"]
+    
+    # Select templates and registers based on architecture
+    if architecture == "x86_64":
+        templates = x86_templates
+        regs = x86_regs
+    elif architecture == "arm":
+        templates = arm_templates
+        regs = arm_regs
+    elif architecture == "mips":
+        templates = mips_templates
+        regs = mips_regs
+    elif architecture == "powerpc":
+        templates = ppc_templates
+        regs = ppc_regs
+    else:
+        raise ValueError(f"Unsupported architecture: {architecture}")
+    
+    functions = []
+    for i in range(num_functions):
+        # Generate a random function name
+        func_name = f"func_{i:04d}"
+        
+        # Generate random length for the function (between 10 and 50 instructions)
+        func_len = random.randint(10, 50)
+        
+        # Generate random instructions
+        instructions = []
+        for _ in range(func_len):
+            template = random.choice(templates)
+            
+            # Replace register placeholders
+            if "{reg1}" in template:
+                template = template.replace("{reg1}", random.choice(regs))
+            if "{reg2}" in template:
+                template = template.replace("{reg2}", random.choice(regs))
+            if "{reg3}" in template:
+                template = template.replace("{reg3}", random.choice(regs))
+            
+            instructions.append(template)
+        
+        # Create function object
+        function = {
+            "name": func_name,
+            "instructions": instructions,
+            "raw": "\n".join(instructions)
+        }
+        
+        functions.append(function)
+    
+    return functions

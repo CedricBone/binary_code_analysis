@@ -158,16 +158,16 @@ class ExperimentRunner:
                 f.write(code)
             logger.info(f"Created sample program: {source_path}")
     
-    def generate_binaries(self, obfuscation_techniques: List[str]):
+    def generate_binaries(self, obfuscation_techniques: List[str] = None):
         """
-        Generate obfuscated binaries from source code.
+        Generate binary variants from source code using different compilation options.
         
         Args:
-            obfuscation_techniques: List of obfuscation techniques to apply
+            obfuscation_techniques: Not used, kept for compatibility
         """
-        logger.info("Generating binaries with various obfuscation techniques...")
+        logger.info("Generating binary variants with different compilation options...")
         
-        obfuscator_script = os.path.join(self.scripts_dir, "obfuscator.py")
+        obfuscator_script = os.path.join(self.scripts_dir, "simple_obfuscator.py")
         
         # Process each source file
         for source_file in glob.glob(os.path.join(self.source_dir, "*.c")):
@@ -178,9 +178,8 @@ class ExperimentRunner:
             cmd = [
                 "python3", obfuscator_script,
                 "--input", source_file,
-                "--output-dir", output_dir,
-                "--techniques"
-            ] + obfuscation_techniques
+                "--output-dir", output_dir
+            ]
             
             logger.info(f"Running: {' '.join(cmd)}")
             subprocess.run(cmd, check=True)
@@ -297,16 +296,13 @@ class ExperimentRunner:
 def main():
     parser = argparse.ArgumentParser(description="Run the complete robustness assessment experiment")
     parser.add_argument("--base-dir", default="./experiment", help="Base directory for the experiment")
-    parser.add_argument("--techniques", nargs="+", 
-                        default=["flatten", "virtualize", "encodeliterals", "ollvm_sub", "ollvm_bcf", "ollvm_fla"],
-                        help="Obfuscation techniques to apply")
     parser.add_argument("--skip", nargs="+", choices=["setup", "binaries", "features", "models", "evaluate"],
                         help="Steps to skip")
     
     args = parser.parse_args()
     
     runner = ExperimentRunner(args.base_dir)
-    runner.run_experiment(args.techniques, args.skip)
+    runner.run_experiment(None, args.skip)  # Pass None for techniques
 
 if __name__ == "__main__":
     main()

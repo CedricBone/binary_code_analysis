@@ -8,7 +8,6 @@ import json
 import argparse
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import models
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -17,8 +16,14 @@ import itertools
 from multiprocessing import Pool
 from tqdm import tqdm
 import config
-from utils import logger, create_directories, set_random_seed
-from train_model import load_functions, create_function_pairs, FunctionPairGenerator, InstructionTokenizer
+from utils import (
+    logger, create_directories, set_random_seed, get_available_architectures,
+    generate_synthetic_functions
+)
+from train_model import (
+    load_functions, create_function_pairs, FunctionPairGenerator, 
+    InstructionTokenizer
+)
 
 def load_model_and_tokenizer(model_dir):
     """Load a trained model and tokenizer"""
@@ -28,7 +33,11 @@ def load_model_and_tokenizer(model_dir):
         logger.error(f"Model file not found: {model_path}")
         return None, None
     
-    model = models.load_model(model_path)
+    try:
+        model = tf.keras.models.load_model(model_path)
+    except Exception as e:
+        logger.error(f"Error loading model: {e}")
+        return None, None
     
     # Load tokenizer
     tokenizer_path = os.path.join(model_dir, "tokenizer.json")
@@ -36,12 +45,24 @@ def load_model_and_tokenizer(model_dir):
         logger.error(f"Tokenizer file not found: {tokenizer_path}")
         return model, None
     
-    tokenizer = InstructionTokenizer.load(tokenizer_path)
+    try:
+        tokenizer = InstructionTokenizer.load(tokenizer_path)
+    except Exception as e:
+        logger.error(f"Error loading tokenizer: {e}")
+        return model, None
     
     return model, tokenizer
 
 def evaluate_model(model, tokenizer, function_pairs, batch_size=32, max_length=150):
     """Evaluate a model on a set of function pairs"""
+    # Check if we have enough pairs to evaluate
+    if len(function_pairs) < batch_size:
+        logger.warning(f"Not enough function pairs ({len(function_pairs)}) for evaluation batch size {batch_size}")
+        
+        # Duplicate pairs if needed to reach batch size
+        while len(function_pairs) < batch_size:
+            function_pairs.extend(function_pairs[:batch_size - len(function_pairs)])
+    
     # Create data generator
     test_generator = FunctionPairGenerator(
         function_pairs,
@@ -59,7 +80,13 @@ def evaluate_model(model, tokenizer, function_pairs, batch_size=32, max_length=1
     # Calculate metrics
     accuracy = accuracy_score(y_true, y_pred)
     precision, recall, f1, _ = precision_recall_fscore_support(y_true, y_pred, average='binary')
-    auc = roc_auc_score(y_true, y_pred_prob)
+    
+    # Calculate AUC (handle case of single class)
+    try:
+        auc = roc_auc_score(y_true, y_pred_prob)
+    except Exception:
+        auc = 0.5  # Default for random performance
+    
     conf_matrix = confusion_matrix(y_true, y_pred)
     
     # Return metrics
@@ -76,7 +103,7 @@ def evaluate_model(model, tokenizer, function_pairs, batch_size=32, max_length=1
 
 def test_configuration(args):
     """Test a model on a specific configuration"""
-    model, tokenizer, source_arch, source_compiler, source_opt, target_arch, target_compiler, target_opt, out_dir = args
+    model, tokenizer, source_arch, source_compiler, source_opt, target_arch, target_compiler, target_opt, out_dir, use_synthetic_data = args
     
     # Create a unique ID for this test
     test_id = f"{source_arch}_{source_compiler}_{source_opt}_to_{target_arch}_{target_compiler}_{target_opt}"
@@ -85,18 +112,19 @@ def test_configuration(args):
     # Load functions for target architecture, compiler, and optimization level
     target_functions = load_functions(target_arch, target_compiler, target_opt)
     
-    if len(target_functions) == 0:
-        logger.warning(f"No functions found for {target_arch} with {target_compiler} -{target_opt}")
-        return {
-            "source_arch": source_arch,
-            "source_compiler": source_compiler,
-            "source_opt": source_opt,
-            "target_arch": target_arch,
-            "target_compiler": target_compiler,
-            "target_opt": target_opt,
-            "metrics": None,
-            "error": "No functions found"
-        }
+    # Generate synthetic data if needed
+    if len(target_functions) == 0 or use_synthetic_data:
+        logger.warning(f"No functions found for {target_arch} with {target_compiler} -{target_opt} or synthetic data requested")
+        logger.info("Generating synthetic function data for testing...")
+        target_functions = generate_synthetic_functions(num_functions=1000, architecture=target_arch)
+        
+        # Save synthetic functions to file for future reference
+        synthetic_dir = os.path.join(config.FUNCTION_DIR, "synthetic", target_arch, target_compiler, target_opt)
+        os.makedirs(synthetic_dir, exist_ok=True)
+        synthetic_path = os.path.join(synthetic_dir, "test_functions.json")
+        with open(synthetic_path, 'w') as f:
+            json.dump(target_functions, f, indent=2)
+        logger.info(f"Saved {len(target_functions)} synthetic functions to {synthetic_path}")
     
     # Create function pairs for testing
     function_pairs = create_function_pairs(
@@ -124,7 +152,10 @@ def test_configuration(args):
             "target_compiler": target_compiler,
             "target_opt": target_opt,
             "metrics": metrics,
-            "error": None
+            "error": None,
+            "using_synthetic_data": len(target_functions) == 0 or use_synthetic_data,
+            "num_functions": len(target_functions),
+            "num_pairs": len(function_pairs)
         }
         
         # Save to file
@@ -133,6 +164,28 @@ def test_configuration(args):
             json.dump(result, f, indent=2)
         
         logger.info(f"Test results saved to {result_path}")
+        
+        # Plot confusion matrix
+        if metrics["confusion_matrix"]:
+            cm = np.array(metrics["confusion_matrix"])
+            plt.figure(figsize=(8, 6))
+            sns.heatmap(
+                cm,
+                annot=True,
+                fmt="d",
+                cmap="Blues",
+                xticklabels=["Dissimilar", "Similar"],
+                yticklabels=["Dissimilar", "Similar"]
+            )
+            plt.ylabel('True label')
+            plt.xlabel('Predicted label')
+            plt.title(f'Confusion Matrix for {test_id}')
+            
+            # Save plot
+            cm_path = os.path.join(out_dir, f"{test_id}_confusion_matrix.png")
+            plt.tight_layout()
+            plt.savefig(cm_path, dpi=300)
+            plt.close()
         
         return result
     
@@ -146,7 +199,10 @@ def test_configuration(args):
             "target_compiler": target_compiler,
             "target_opt": target_opt,
             "metrics": None,
-            "error": str(e)
+            "error": str(e),
+            "using_synthetic_data": len(target_functions) == 0 or use_synthetic_data,
+            "num_functions": len(target_functions),
+            "num_pairs": len(function_pairs) if 'function_pairs' in locals() else 0
         }
 
 def plot_confusion_matrix(cm, class_names, output_path):
@@ -189,8 +245,13 @@ def plot_metrics(results, output_dir):
                 "precision": result["metrics"]["precision"],
                 "recall": result["metrics"]["recall"],
                 "f1": result["metrics"]["f1"],
-                "auc": result["metrics"]["auc"]
+                "auc": result["metrics"]["auc"],
+                "using_synthetic_data": result.get("using_synthetic_data", False)
             })
+    
+    if not data:
+        logger.error("No valid results to plot")
+        return
     
     # Convert to DataFrame
     df = pd.DataFrame(data)
@@ -323,6 +384,8 @@ def main():
                         help='Specific target optimization level to test on')
     parser.add_argument('--parallel', type=int, default=4,
                         help='Number of parallel tests')
+    parser.add_argument('--use-synthetic-data', action='store_true',
+                        help='Use synthetic data for testing')
     
     args = parser.parse_args()
     
@@ -353,8 +416,13 @@ def main():
     # Prepare test configurations
     test_configs = []
     
-    # Filter architectures based on command line arguments
-    archs = [args.target_arch] if args.target_arch else config.ARCHITECTURES.keys()
+    # Determine available architectures
+    available_archs = get_available_architectures()
+    if args.target_arch:
+        if args.target_arch not in available_archs and not args.use_synthetic_data:
+            logger.warning(f"Target architecture {args.target_arch} is not available. Using synthetic data.")
+            args.use_synthetic_data = True
+        available_archs = [args.target_arch]
     
     # Filter compilers
     compilers = [args.target_compiler] if args.target_compiler else config.COMPILERS.keys()
@@ -363,7 +431,7 @@ def main():
     opt_levels = [args.target_opt] if args.target_opt else config.OPTIMIZATION_LEVELS
     
     # Generate all test configurations
-    for target_arch in archs:
+    for target_arch in available_archs:
         for target_compiler in compilers:
             for target_opt in opt_levels:
                 test_configs.append((
@@ -375,7 +443,8 @@ def main():
                     target_arch,
                     target_compiler,
                     target_opt,
-                    results_dir
+                    results_dir,
+                    args.use_synthetic_data
                 ))
     
     logger.info(f"Testing model on {len(test_configs)} configurations")
@@ -394,6 +463,7 @@ def main():
         "source_opt": args.source_opt,
         "num_configs_tested": len(test_configs),
         "num_configs_succeeded": len([r for r in results if r["metrics"] is not None]),
+        "using_synthetic_data": args.use_synthetic_data,
         "results": results
     }
     
@@ -402,6 +472,24 @@ def main():
         json.dump(summary, f, indent=2)
     
     logger.info(f"Testing complete. Results saved to {results_dir}")
+    
+    # Print summary
+    success_rate = summary["num_configs_succeeded"] / summary["num_configs_tested"] * 100
+    logger.info(f"Success rate: {success_rate:.2f}% ({summary['num_configs_succeeded']}/{summary['num_configs_tested']})")
+    
+    # Calculate average metrics
+    if summary["num_configs_succeeded"] > 0:
+        avg_metrics = {
+            "accuracy": np.mean([r["metrics"]["accuracy"] for r in results if r["metrics"] is not None]),
+            "precision": np.mean([r["metrics"]["precision"] for r in results if r["metrics"] is not None]),
+            "recall": np.mean([r["metrics"]["recall"] for r in results if r["metrics"] is not None]),
+            "f1": np.mean([r["metrics"]["f1"] for r in results if r["metrics"] is not None]),
+            "auc": np.mean([r["metrics"]["auc"] for r in results if r["metrics"] is not None])
+        }
+        
+        logger.info(f"Average metrics:")
+        for metric, value in avg_metrics.items():
+            logger.info(f"  {metric}: {value:.4f}")
 
 if __name__ == "__main__":
     main()

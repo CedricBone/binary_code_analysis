@@ -48,11 +48,32 @@ check_requirements() {
         pip install tensorflow scikit-learn matplotlib seaborn pandas requests tqdm
     fi
     
-    # Check other required commands
-    check_command make || { echo -e "${YELLOW}Warning: 'make' not found. May be required for compilation.${NC}"; }
-    check_command objdump || { echo -e "${YELLOW}Warning: 'objdump' not found. May be required for function extraction.${NC}"; }
+    # Check critical dependencies
+    for cmd in gcc g++ make objdump; do
+        if ! check_command $cmd; then
+            echo -e "${RED}Critical dependency $cmd is missing. Please install it before continuing.${NC}"
+            exit 1
+        fi
+    done
     
-    echo -e "${GREEN}All requirements checked.${NC}"
+    # Check for cross-architecture tools - warn but don't fail
+    missing=0
+    for tool in arm-linux-gnueabi-objdump mips-linux-gnu-objdump powerpc64-linux-gnu-objdump; do
+        if ! check_command $tool; then
+            echo -e "${YELLOW}Warning: $tool not found. Cross-architecture analysis will be limited.${NC}"
+            missing=1
+        fi
+    done
+    
+    if [ $missing -eq 1 ]; then
+        echo -e "${YELLOW}Some cross-architecture tools are missing. You can install them with:${NC}"
+        echo -e "${YELLOW}sudo apt install binutils-arm-linux-gnueabi binutils-mips-linux-gnu binutils-powerpc-linux-gnu${NC}"
+        echo -e "${YELLOW}Continuing with x86_64 only...${NC}"
+    else
+        echo -e "${GREEN}All cross-architecture tools are available.${NC}"
+    fi
+    
+    echo -e "${GREEN}All core requirements checked.${NC}"
 }
 
 # Make scripts executable
@@ -69,10 +90,18 @@ compile_projects() {
     echo -e "${YELLOW}This step may take some time depending on the number of projects and architectures.${NC}"
     echo -e "${YELLOW}You can monitor progress in the logs directory.${NC}"
     
-    python3 compile_projects.py --parallel $PARALLEL
+    # If cross-arch tools are missing, only compile for x86_64
+    if ! command -v arm-linux-gnueabi-objdump &> /dev/null; then
+        echo -e "${YELLOW}Cross-architecture tools missing, compiling only for x86_64...${NC}"
+        python3 compile_projects.py --parallel $PARALLEL --arch x86_64
+    else
+        python3 compile_projects.py --parallel $PARALLEL
+    fi
     
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Warning: Some compilations may have failed. Continuing with available binaries.${NC}"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+        echo -e "${RED}Error: Compilation failed. Check logs for details.${NC}"
+        # Continue anyway to see how far we can get
     else
         echo -e "${GREEN}Compilation completed successfully.${NC}"
     fi
@@ -84,10 +113,18 @@ extract_functions() {
     
     echo -e "${YELLOW}Extracting functions from compiled binaries...${NC}"
     
-    python3 extract_functions.py --parallel $PARALLEL
+    # If cross-arch tools are missing, only extract for x86_64
+    if ! command -v arm-linux-gnueabi-objdump &> /dev/null; then
+        echo -e "${YELLOW}Cross-architecture tools missing, extracting only from x86_64...${NC}"
+        python3 extract_functions.py --parallel $PARALLEL --arch x86_64
+    else
+        python3 extract_functions.py --parallel $PARALLEL
+    fi
     
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Warning: Function extraction encountered some errors. Continuing with extracted functions.${NC}"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+        echo -e "${RED}Error: Function extraction failed. Check logs for details.${NC}"
+        # Continue anyway, use synthetic data if needed
     else
         echo -e "${GREEN}Function extraction completed successfully.${NC}"
     fi
@@ -99,15 +136,19 @@ train_model() {
     
     echo -e "${YELLOW}Training model on $SOURCE_ARCH with $SOURCE_COMPILER -$SOURCE_OPT...${NC}"
     
+    # Try to generate synthetic data if no real data is available
     python3 train_model.py \
         --source-arch $SOURCE_ARCH \
         --source-compiler $SOURCE_COMPILER \
         --source-opt $SOURCE_OPT \
         --epochs $EPOCHS \
-        --batch-size $BATCH_SIZE
+        --batch-size $BATCH_SIZE \
+        --use-synthetic-data
     
-    if [ $? -ne 0 ]; then
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
         echo -e "${RED}Error: Model training failed.${NC}"
+        echo -e "${RED}Cannot continue with testing and analysis.${NC}"
         exit 1
     else
         echo -e "${GREEN}Model training completed successfully.${NC}"
@@ -120,14 +161,30 @@ test_model() {
     
     echo -e "${YELLOW}Testing model on all architectures, compilers, and optimization levels...${NC}"
     
-    python3 test_model.py \
-        --source-arch $SOURCE_ARCH \
-        --source-compiler $SOURCE_COMPILER \
-        --source-opt $SOURCE_OPT \
-        --parallel $PARALLEL
+    # If cross-arch tools are missing, only test on x86_64
+    if ! command -v arm-linux-gnueabi-objdump &> /dev/null; then
+        echo -e "${YELLOW}Cross-architecture tools missing, testing only on x86_64...${NC}"
+        python3 test_model.py \
+            --source-arch $SOURCE_ARCH \
+            --source-compiler $SOURCE_COMPILER \
+            --source-opt $SOURCE_OPT \
+            --target-arch x86_64 \
+            --parallel $PARALLEL \
+            --use-synthetic-data
+    else
+        python3 test_model.py \
+            --source-arch $SOURCE_ARCH \
+            --source-compiler $SOURCE_COMPILER \
+            --source-opt $SOURCE_OPT \
+            --parallel $PARALLEL \
+            --use-synthetic-data
+    fi
     
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Warning: Model testing encountered some errors. Continuing with available results.${NC}"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+        echo -e "${RED}Error: Model testing failed. Check logs for details.${NC}"
+        echo -e "${RED}Cannot continue with analysis.${NC}"
+        exit 1
     else
         echo -e "${GREEN}Model testing completed successfully.${NC}"
     fi
@@ -144,8 +201,10 @@ analyze_results() {
         --source-compiler $SOURCE_COMPILER \
         --source-opt $SOURCE_OPT
     
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Warning: Results analysis encountered some errors.${NC}"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+        echo -e "${RED}Error: Results analysis failed. Check logs for details.${NC}"
+        exit 1
     else
         echo -e "${GREEN}Results analysis completed successfully.${NC}"
     fi

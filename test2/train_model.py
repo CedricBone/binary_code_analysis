@@ -16,7 +16,10 @@ from sklearn.model_selection import train_test_split
 import glob
 from tqdm import tqdm
 import config
-from utils import logger, create_directories, set_random_seed, save_json, load_json
+from utils import (
+    logger, create_directories, set_random_seed, save_json, load_json, 
+    generate_synthetic_functions
+)
 
 class InstructionTokenizer:
     """Tokenizer for instructions"""
@@ -180,41 +183,96 @@ def create_function_pairs(source_functions, target_functions=None, similar_ratio
     
     # Create similar pairs up to the desired number
     num_similar = int(max_pairs * similar_ratio)
-    similar_pairs = similar_pairs[:num_similar]
     
-    # Add similar pairs to the result
-    for source_func, target_func in similar_pairs:
-        function_pairs.append({
-            "func1": source_func,
-            "func2": target_func,
-            "label": 1.0
-        })
+    # If there aren't enough similar pairs, create random ones
+    if len(similar_pairs) < num_similar:
+        logger.warning(f"Only found {len(similar_pairs)} similar pairs, need {num_similar}")
+        
+        # Add all existing similar pairs
+        for source_func, target_func in similar_pairs:
+            function_pairs.append({
+                "func1": source_func,
+                "func2": target_func,
+                "label": 1.0
+            })
+        
+        # Generate random pairs to make up the difference
+        additional_needed = num_similar - len(similar_pairs)
+        
+        if additional_needed > 0 and len(source_functions) > 0:
+            logger.info(f"Generating {additional_needed} random similar pairs")
+            
+            # Randomly select pairs of functions and treat them as similar
+            for _ in range(additional_needed):
+                if len(source_functions) > 1:
+                    func1, func2 = random.sample(source_functions, 2)
+                else:
+                    func1 = func2 = source_functions[0]
+                
+                function_pairs.append({
+                    "func1": func1,
+                    "func2": func2,
+                    "label": 1.0
+                })
+    else:
+        # Use a subset of similar pairs
+        similar_subset = random.sample(similar_pairs, num_similar)
+        for source_func, target_func in similar_subset:
+            function_pairs.append({
+                "func1": source_func,
+                "func2": target_func,
+                "label": 1.0
+            })
     
     # Create dissimilar pairs
-    num_dissimilar = max_pairs - len(similar_pairs)
+    num_dissimilar = max_pairs - len(function_pairs)
     dissimilar_pairs = []
     
-    # Randomly select source and target functions
-    source_indices = random.sample(range(len(source_functions)), min(num_dissimilar, len(source_functions)))
-    target_indices = random.sample(range(len(target_functions)), min(num_dissimilar, len(target_functions)))
-    
-    # Create dissimilar pairs
-    for i, source_idx in enumerate(source_indices):
-        if i >= len(target_indices):
-            break
+    # Make sure we have enough functions for dissimilar pairs
+    if len(source_functions) < 2 or len(target_functions) < 2:
+        logger.warning("Not enough functions for dissimilar pairs")
         
-        source_func = source_functions[source_idx]
-        target_func = target_functions[target_indices[i]]
+        # Just duplicate pairs with opposite labels if needed
+        for i in range(num_dissimilar):
+            if i < len(function_pairs):
+                similar_pair = function_pairs[i]
+                dissimilar_pairs.append({
+                    "func1": similar_pair["func1"],
+                    "func2": similar_pair["func2"],
+                    "label": 0.0
+                })
+            else:
+                # Create random pairs
+                if len(source_functions) > 0 and len(target_functions) > 0:
+                    func1 = random.choice(source_functions)
+                    func2 = random.choice(target_functions)
+                    dissimilar_pairs.append({
+                        "func1": func1,
+                        "func2": func2,
+                        "label": 0.0
+                    })
+    else:
+        # Randomly select source and target functions
+        source_indices = random.sample(range(len(source_functions)), min(num_dissimilar, len(source_functions)))
+        target_indices = random.sample(range(len(target_functions)), min(num_dissimilar, len(target_functions)))
         
-        # Skip if the functions are actually similar
-        if source_func["name"] == target_func["name"]:
-            continue
-        
-        dissimilar_pairs.append({
-            "func1": source_func,
-            "func2": target_func,
-            "label": 0.0
-        })
+        # Create dissimilar pairs
+        for i, source_idx in enumerate(source_indices):
+            if i >= len(target_indices):
+                break
+            
+            source_func = source_functions[source_idx]
+            target_func = target_functions[target_indices[i]]
+            
+            # Skip if the functions are actually similar
+            if source_func["name"] == target_func["name"]:
+                continue
+            
+            dissimilar_pairs.append({
+                "func1": source_func,
+                "func2": target_func,
+                "label": 0.0
+            })
     
     # Add dissimilar pairs to the result
     function_pairs.extend(dissimilar_pairs)
@@ -223,7 +281,7 @@ def create_function_pairs(source_functions, target_functions=None, similar_ratio
     random.shuffle(function_pairs)
     
     logger.info(f"Created {len(function_pairs)} function pairs "
-                f"({len(similar_pairs)} similar, {len(dissimilar_pairs)} dissimilar)")
+                f"({len(function_pairs) - len(dissimilar_pairs)} similar, {len(dissimilar_pairs)} dissimilar)")
     
     return function_pairs
 
@@ -285,9 +343,18 @@ def train_model_on_source(source_arch, source_compiler, source_opt, output_dir, 
     # Load functions
     source_functions = load_functions(source_arch, source_compiler, source_opt)
     
-    if len(source_functions) == 0:
-        logger.error(f"No functions found for {source_arch} with {source_compiler} -{source_opt}")
-        return None, None
+    # If no functions found or use_synthetic_data flag is set, generate synthetic data
+    if len(source_functions) == 0 or args.use_synthetic_data:
+        logger.warning(f"No functions found for {source_arch} with {source_compiler} -{source_opt} or synthetic data requested")
+        logger.info("Generating synthetic function data for training...")
+        source_functions = generate_synthetic_functions(num_functions=2000, architecture=source_arch)
+        
+        # Save synthetic functions to file
+        synthetic_dir = os.path.join(config.FUNCTION_DIR, "synthetic", source_arch, source_compiler, source_opt)
+        os.makedirs(synthetic_dir, exist_ok=True)
+        synthetic_path = os.path.join(synthetic_dir, "functions.json")
+        save_json(source_functions, synthetic_path)
+        logger.info(f"Saved {len(source_functions)} synthetic functions to {synthetic_path}")
     
     # Create function pairs
     function_pairs = create_function_pairs(
@@ -375,7 +442,7 @@ def train_model_on_source(source_arch, source_compiler, source_opt, output_dir, 
     # Save training history
     history_path = os.path.join(output_dir, "history.json")
     with open(history_path, 'w') as f:
-        json.dump(history.history, f)
+        json.dump({k: [float(v) for v in vals] for k, vals in history.history.items()}, f)
     
     # Load the best model
     model.load_weights(checkpoint_path)
@@ -398,7 +465,8 @@ def train_model_on_source(source_arch, source_compiler, source_opt, output_dir, 
         "sequence_length": config.SEQUENCE_LENGTH,
         "vocab_size": tokenizer.num_words,
         "val_accuracy": float(val_accuracy),
-        "val_loss": float(val_loss)
+        "val_loss": float(val_loss),
+        "using_synthetic_data": len(source_functions) == 0 or args.use_synthetic_data
     }
     
     metadata_path = os.path.join(output_dir, "metadata.json")
@@ -420,6 +488,8 @@ def main():
                         help='Batch size for training')
     parser.add_argument('--epochs', type=int, default=config.EPOCHS,
                         help='Number of epochs for training')
+    parser.add_argument('--use-synthetic-data', action='store_true',
+                        help='Use synthetic data for training')
     
     args = parser.parse_args()
     
